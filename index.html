@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Super Carrera de Edwin</title>
   <style>
     body {
@@ -79,17 +79,17 @@
 </head>
 <body>
 
-  <div class="instrucciones">
-    <p>🚨 **Instrucciones del Juego:** 🚨</p>
+  <div class="instrucciones" id="instrucciones">
+    <p>🚨 <strong>Instrucciones del Juego:</strong> 🚨</p>
     <p>1. Elige un emoji de la lista de abajo como tu apuesta. <br> 
        2. Haz clic en "Iniciar Carrera" para que los emojis compitan. <br> 
        3. ¡El primer emoji que cruce la meta gana! 🎉<br> 
-       4. El primero en enviar una captura de pantalla de su victoria recibirá un premio de **Q200**. 📸💰
+       4. El primero en enviar una captura de pantalla de su victoria recibirá un premio de <strong>Q200</strong>. 📸💰
     </p>
   </div>
 
   <h1>🏁 La Super Carrera de Edwin</h1>
-  <p>Elige un emoji para apostar y luego inicia la carrera.</p>
+  <p id="textoInicial">Elige un emoji para apostar y luego inicia la carrera.</p>
 
   <div id="eleccion">
     <div class="controles">
@@ -120,12 +120,6 @@
   <div id="resultado"></div>
   <button id="reiniciarCarrera">Reiniciar Carrera</button>
 
-  <!-- Sounds -->
-  <audio id="startSound" src="start-sound.mp3" preload="auto"></audio>
-  <audio id="raceSound" src="race-sound.mp3" preload="auto"></audio>
-  <audio id="winSound" src="win-sound.mp3" preload="auto"></audio>
-  <audio id="loseSound" src="lose-sound.mp3" preload="auto"></audio>
-
   <script>
     const botones = document.querySelectorAll('[data-emoji]');
     const botonInicio = document.getElementById('iniciarCarrera');
@@ -135,16 +129,12 @@
     const emojis = document.querySelectorAll('.emoji');
     const zonaCarrera = document.getElementById('zonaCarrera');
     const eleccion = document.getElementById('eleccion');
-    
+    const instrucciones = document.getElementById('instrucciones');
+    const textoInicial = document.getElementById('textoInicial');
+
     let apuesta = null;
     let corriendo = false;
     let finalizados = [];
-
-    // Sounds
-    const startSound = document.getElementById('startSound');
-    const raceSound = document.getElementById('raceSound');
-    const winSound = document.getElementById('winSound');
-    const loseSound = document.getElementById('loseSound');
 
     botones.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -167,39 +157,35 @@
         emoji.style.left = '0px';
       });
 
-      // Hide the emoji selection and show the race
+      instrucciones.style.display = 'none';
+      textoInicial.style.display = 'none';
       eleccion.style.display = 'none';
       zonaCarrera.style.display = 'block';
       resultado.style.display = 'none';
 
-      // Play start sound
-      startSound.play();
-      iniciarCarrera();
-
-      // Disable betting buttons after starting the race
       botones.forEach(btn => {
         btn.disabled = true;
       });
+
+      iniciarCarrera();
     });
 
     botonReiniciar.addEventListener('click', () => {
-      // Reiniciar todo
       corriendo = false;
       finalizados = [];
       resultado.textContent = '';
       apuesta = null;
       apuestaSeleccionada.textContent = '';
 
-      // Show the emoji selection again
+      instrucciones.style.display = 'block';
+      textoInicial.style.display = 'block';
       eleccion.style.display = 'block';
       zonaCarrera.style.display = 'none';
 
-      // Re-enable betting buttons
       botones.forEach(btn => {
         btn.disabled = false;
       });
 
-      // Hide the "Reiniciar Carrera" button and show "Iniciar Carrera"
       botonReiniciar.style.display = 'none';
       botonInicio.style.display = 'inline-block';
     });
@@ -212,10 +198,6 @@
       emojis.forEach(emoji => {
         posiciones[emoji.dataset.emoji] = 0;
       });
-
-      // Play race sound while the race is going on
-      raceSound.loop = true;  // Loop the sound during the race
-      raceSound.play();
 
       function paso() {
         if (!corriendo) return;
@@ -232,7 +214,6 @@
             finalizados.push(id);
             if (finalizados.length === 1) {
               corriendo = false;
-              raceSound.pause();  // Stop the race sound when the race finishes
               mostrarGanador(id);
             }
           }
@@ -247,39 +228,23 @@
     }
 
     function mostrarGanador(ganador) {
-      // Introduce a 30% chance for the player's selected emoji to win
-      const chance = Math.random();
-      if (chance <= 0.30) {
-        ganador = apuesta; // 30% chance that the player's choice wins
-      } else {
-        // Otherwise, randomly select the winner from the remaining emojis
-        const emojisRestantes = [...emojis].filter(emoji => emoji.dataset.emoji !== apuesta);
-        ganador = emojisRestantes[Math.floor(Math.random() * emojisRestantes.length)].dataset.emoji;
-      }
-
       if (ganador === apuesta) {
         resultado.textContent = `🎉 ¡Ganaste! ${ganador} fue el primero en llegar.`;
         resultado.style.color = 'green';
-        winSound.play();  // Play win sound
+        alert(`¡Ganaste! ${ganador} fue el primero en llegar.`);
       } else {
         resultado.textContent = `😢 Perdiste. ${ganador} ganó la carrera.`;
         resultado.style.color = 'red';
-        loseSound.play();  // Play lose sound
+        alert(`Perdiste. ${ganador} ganó la carrera.`);
       }
 
-      // Show alert before restarting
-      alert(`¡${ganador === apuesta ? 'Ganaste' : 'Perdiste'}!`);
-
-      // After the alert, restart everything
       botonReiniciar.style.display = 'inline-block';
-      botonInicio.style.display = 'none';  // Hide "Iniciar Carrera" after race starts
+      botonInicio.style.display = 'none';
 
-      // Disable betting buttons
       botones.forEach(btn => {
         btn.disabled = true;
       });
     }
   </script>
-
 </body>
 </html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrera de Emojis</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .pista {
+      position: relative;
+      height: 60px;
+      margin: 10px 0;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 40px;
+      top: 10px;
+      left: 0;
+    }
+
+    .controles {
+      margin: 20px 0;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏁 Carrera de Emojis</h1>
+  <p>Elige un emoji para apostar y luego inicia la carrera.</p>
+
+  <div class="controles">
+    <span>Tu apuesta:</span><br>
+    <button data-emoji="🐢">🐢</button>
+    <button data-emoji="🐇">🐇</button>
+    <button data-emoji="🦄">🦄</button>
+    <button data-emoji="🐶">🐶</button>
+    <button data-emoji="🐙">🐙</button>
+  </div>
+
+  <button id="iniciarCarrera">Iniciar Carrera</button>
+  <div id="resultado"></div>
+
+  <div id="zonaCarrera">
+    <div class="pista"><div class="emoji" data-emoji="🐢">🐢</div></div>
+    <div class="pista"><div class="emoji" data-emoji="🐇">🐇</div></div>
+    <div class="pista"><div class="emoji" data-emoji="🦄">🦄</div></div>
+    <div class="pista"><div class="emoji" data-emoji="🐶">🐶</div></div>
+    <div class="pista"><div class="emoji" data-emoji="🐙">🐙</div></div>
+  </div>
+
+  <script>
+    const botones = document.querySelectorAll('[data-emoji]');
+    const botonInicio = document.getElementById('iniciarCarrera');
+    const resultado = document.getElementById('resultado');
+    const emojis = document.querySelectorAll('.emoji');
+
+    let apuesta = null;
+    let corriendo = false;
+    let finalizados = [];
+
+    botones.forEach(btn => {
+      btn.addEventListener('click', () => {
+        apuesta = btn.getAttribute('data-emoji');
+        resultado.textContent = `Apostaste por: ${apuesta}`;
+        resultado.style.color = 'black';
+      });
+    });
+
+    botonInicio.addEventListener('click', () => {
+      if (!apuesta) {
+        alert('¡Primero debes elegir un emoji!');
+        return;
+      }
+
+      corriendo = true;
+      finalizados = [];
+      resultado.textContent = '';
+      emojis.forEach(emoji => {
+        emoji.style.left = '0px';
+      });
+
+      iniciarCarrera();
+    });
+
+    function iniciarCarrera() {
+      const anchoPista = document.querySelector('.pista').clientWidth;
+      const meta = anchoPista - 50;
+
+      const posiciones = {};
+      emojis.forEach(emoji => {
+        posiciones[emoji.dataset.emoji] = 0;
+      });
+
+      function paso() {
+        if (!corriendo) return;
+
+        emojis.forEach(emoji => {
+          const id = emoji.dataset.emoji;
+          if (finalizados.includes(id)) return;
+
+          const velocidad = Math.random() * 4 + 1;
+          posiciones[id] += velocidad;
+          emoji.style.left = posiciones[id] + 'px';
+
+          if (posiciones[id] >= meta) {
+            finalizados.push(id);
+            if (finalizados.length === 1) {
+              corriendo = false;
+              mostrarGanador(id);
+            }
+          }
+        });
+
+        if (corriendo) {
+          requestAnimationFrame(paso);
+        }
+      }
+
+      requestAnimationFrame(paso);
+    }
+
+    function mostrarGanador(ganador) {
+      if (ganador === apuesta) {
+        resultado.textContent = `🎉 ¡Ganaste! ${ganador} fue el primero en llegar.`;
+        resultado.style.color = 'green';
+      } else {
+        resultado.textContent = `😢 Perdiste. ${ganador} ganó la carrera.`;
+        resultado.style.color = 'red';
+      }
+    }
+  </script>
+
+</body>
+</html>

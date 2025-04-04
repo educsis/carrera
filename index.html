@@ -42,7 +42,7 @@
       position: absolute;
       font-size: 40px;
       top: 10px;
-      left: 0;
+      left: 0px;
     }
 
     .controles {
@@ -68,6 +68,10 @@
       color: #555;
     }
 
+    #zonaCarrera {
+      display: none;
+    }
+
     #reiniciarCarrera {
       display: none;
     }
@@ -87,22 +91,21 @@
   <h1>🏁 La Super Carrera de Edwin</h1>
   <p>Elige un emoji para apostar y luego inicia la carrera.</p>
 
-  <div class="controles">
-    <span>Tu apuesta:</span><br>
-    <button data-emoji="🐢">🐢</button>
-    <button data-emoji="🐇">🐇</button>
-    <button data-emoji="🦄">🦄</button>
-    <button data-emoji="🐶">🐶</button>
-    <button data-emoji="🐙">🐙</button>
-    <button data-emoji="🦁">🦁</button>
-    <button data-emoji="🐵">🐵</button>
-  </div>
+  <div id="eleccion">
+    <div class="controles">
+      <span>Tu apuesta:</span><br>
+      <button data-emoji="🐢">🐢</button>
+      <button data-emoji="🐇">🐇</button>
+      <button data-emoji="🦄">🦄</button>
+      <button data-emoji="🐶">🐶</button>
+      <button data-emoji="🐙">🐙</button>
+      <button data-emoji="🦁">🦁</button>
+      <button data-emoji="🐵">🐵</button>
+    </div>
 
-  <div id="apuestaSeleccionada"></div>
-  
-  <button id="iniciarCarrera">Iniciar Carrera</button>
-  <button id="reiniciarCarrera">Reiniciar Carrera</button>
-  <div id="resultado"></div>
+    <div id="apuestaSeleccionada"></div>
+    <button id="iniciarCarrera">Iniciar Carrera</button>
+  </div>
 
   <div id="zonaCarrera">
     <div class="pista"><div class="emoji" data-emoji="🐢">🐢</div></div>
@@ -113,6 +116,9 @@
     <div class="pista"><div class="emoji" data-emoji="🦁">🦁</div></div>
     <div class="pista"><div class="emoji" data-emoji="🐵">🐵</div></div>
   </div>
+
+  <div id="resultado"></div>
+  <button id="reiniciarCarrera">Reiniciar Carrera</button>
 
   <!-- Sounds -->
   <audio id="startSound" src="start-sound.mp3" preload="auto"></audio>
@@ -127,6 +133,8 @@
     const resultado = document.getElementById('resultado');
     const apuestaSeleccionada = document.getElementById('apuestaSeleccionada');
     const emojis = document.querySelectorAll('.emoji');
+    const zonaCarrera = document.getElementById('zonaCarrera');
+    const eleccion = document.getElementById('eleccion');
     
     let apuesta = null;
     let corriendo = false;
@@ -159,6 +167,11 @@
         emoji.style.left = '0px';
       });
 
+      // Hide the emoji selection and show the race
+      eleccion.style.display = 'none';
+      zonaCarrera.style.display = 'block';
+      resultado.style.display = 'none';
+
       // Play start sound
       startSound.play();
       iniciarCarrera();
@@ -176,6 +189,10 @@
       resultado.textContent = '';
       apuesta = null;
       apuestaSeleccionada.textContent = '';
+
+      // Show the emoji selection again
+      eleccion.style.display = 'block';
+      zonaCarrera.style.display = 'none';
 
       // Re-enable betting buttons
       botones.forEach(btn => {
@@ -230,11 +247,10 @@
     }
 
     function mostrarGanador(ganador) {
-      // Introduce a 20% chance for the player's selected emoji to win
+      // Introduce a 30% chance for the player's selected emoji to win
       const chance = Math.random();
-
-      if (chance <= 0.35) {
-        ganador = apuesta; // 20% chance that the player's choice wins
+      if (chance <= 0.30) {
+        ganador = apuesta; // 30% chance that the player's choice wins
       } else {
         // Otherwise, randomly select the winner from the remaining emojis
         const emojisRestantes = [...emojis].filter(emoji => emoji.dataset.emoji !== apuesta);
@@ -251,11 +267,14 @@
         loseSound.play();  // Play lose sound
       }
 
-      // Mostrar botón de reinicio
+      // Show alert before restarting
+      alert(`¡${ganador === apuesta ? 'Ganaste' : 'Perdiste'}!`);
+
+      // After the alert, restart everything
       botonReiniciar.style.display = 'inline-block';
       botonInicio.style.display = 'none';  // Hide "Iniciar Carrera" after race starts
 
-      // Desactivar botones de apuesta
+      // Disable betting buttons
       botones.forEach(btn => {
         btn.disabled = true;
       });

@@ -162,6 +162,11 @@
       // Play start sound
       startSound.play();
       iniciarCarrera();
+
+      // Disable betting buttons after starting the race
+      botones.forEach(btn => {
+        btn.disabled = true;
+      });
     });
 
     botonReiniciar.addEventListener('click', () => {
@@ -172,13 +177,14 @@
       apuesta = null;
       apuestaSeleccionada.textContent = '';
 
-      // Reaparecer los botones de apuesta
+      // Re-enable betting buttons
       botones.forEach(btn => {
         btn.disabled = false;
       });
 
-      // Ocultar el botón de reiniciar
+      // Hide the "Reiniciar Carrera" button and show "Iniciar Carrera"
       botonReiniciar.style.display = 'none';
+      botonInicio.style.display = 'inline-block';
     });
 
     function iniciarCarrera() {
@@ -227,7 +233,7 @@
       // Introduce a 20% chance for the player's selected emoji to win
       const chance = Math.random();
 
-      if (chance <= 0.20) {
+      if (chance <= 0.35) {
         ganador = apuesta; // 20% chance that the player's choice wins
       } else {
         // Otherwise, randomly select the winner from the remaining emojis
@@ -247,6 +253,7 @@
 
       // Mostrar botón de reinicio
       botonReiniciar.style.display = 'inline-block';
+      botonInicio.style.display = 'none';  // Hide "Iniciar Carrera" after race starts
 
       // Desactivar botones de apuesta
       botones.forEach(btn => {

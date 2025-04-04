@@ -115,7 +115,7 @@
   </div>
 
   <!-- Sounds -->
-  <audio id="startSound" src="start.mp3" preload="auto"></audio>
+  <audio id="startSound" src="start-sound.mp3" preload="auto"></audio>
   <audio id="raceSound" src="race-sound.mp3" preload="auto"></audio>
   <audio id="winSound" src="win-sound.mp3" preload="auto"></audio>
   <audio id="loseSound" src="lose-sound.mp3" preload="auto"></audio>
@@ -224,6 +224,17 @@
     }
 
     function mostrarGanador(ganador) {
+      // Introduce a 20% chance for the player's selected emoji to win
+      const chance = Math.random();
+
+      if (chance <= 0.20) {
+        ganador = apuesta; // 20% chance that the player's choice wins
+      } else {
+        // Otherwise, randomly select the winner from the remaining emojis
+        const emojisRestantes = [...emojis].filter(emoji => emoji.dataset.emoji !== apuesta);
+        ganador = emojisRestantes[Math.floor(Math.random() * emojisRestantes.length)].dataset.emoji;
+      }
+
       if (ganador === apuesta) {
         resultado.textContent = `🎉 ¡Ganaste! ${ganador} fue el primero en llegar.`;
         resultado.style.color = 'green';

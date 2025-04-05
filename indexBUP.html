@@ -2,114 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La Super Carrera de Edwin</title>
+  <title>La Super Carrera</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      text-align: center;
-      color: #333;
-    }
+    body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
     .instructions {
-      background-color: #fff8c6;
-      padding: 12px;
-      border-radius: 12px;
-      margin: 15px auto;
-      width: 90%;
-      font-size: 1rem;
-    }
-    h1 {
-      font-size: 6vw;
-      margin: 10px 0;
-    }
-    #chooseText {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px auto;
-      width: 90%;
-    }
-    .controls button {
-      font-size: 6vw;
-      padding: 5px 10px;
+      background-color: #fff4a3;
+      padding: 10px;
       border-radius: 8px;
-      border: none;
-      background: #ffffff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .controls button:hover {
-      transform: scale(1.1);
-    }
-    #startBtn, #restartBtn {
-      font-size: 4.5vw;
-      padding: 10px 16px;
-      margin-top: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #restartBtn {
-      background-color: #2196F3;
-      display: none;
-    }
-    #raceArea {
-      width: 100%;
-      margin-top: 15px;
-      display: none;
+      margin: 20px auto;
+      width: fit-content;
     }
     .track {
       position: relative;
-      height: 10vw;
-      margin: 8px 0;
-      width: 100%;
-      background: #dcdcdc;
-      border-radius: 12px;
+      height: 60px;
+      margin: 10px auto;
+      width: 90%;
+      background: #ddd;
+      border-radius: 10px;
       overflow: hidden;
     }
     .emoji {
       position: absolute;
       left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 8vw;
+      top: 10px;
+      font-size: 36px;
     }
-    #chosenEmoji {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 1.1rem;
+    .controls button {
+      font-size: 24px;
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    #raceArea, #restartBtn {
+      display: none;
     }
     #result {
-      font-size: 1.2rem;
+      font-size: 22px;
+      margin-top: 20px;
       font-weight: bold;
-      margin: 20px auto;
     }
   </style>
 </head>
 <body>
 
   <div class="instructions" id="instructionsBox">
-    📣 <strong>Instrucciones:</strong><br>
-    1. Elige un emoji para apostar.<br>
-    2. Presiona "Iniciar Carrera".<br>
-    3. ¡Si tu emoji gana, celebramos! 🎉
+    📣 <strong>Instrucciones:</strong> <br>
+    1. Elige un emoji para apostar. <br>
+    2. Presiona "Iniciar Carrera". <br>
+    3. Si tu emoji gana, ¡felicidades! 🎉
   </div>
 
-  <h1>🏁 La Super Carrera de Edwin</h1>
+  <h1>🏁 La Super Carrera</h1>
   <p id="chooseText">Elige un emoji para apostar y luego inicia la carrera.</p>
 
   <div class="controls" id="selectionArea">
@@ -135,7 +78,7 @@
   </div>
 
   <div id="result"></div>
-  <button id="restartBtn">Reiniciar</button>
+  <button id="restartBtn" style="padding: 10px 40px; font-size: 18px;">Reiniciar</button>
 
   <!-- 🎵 Sounds -->
   <audio id="soundStart" src="start.mp3"></audio>
@@ -194,7 +137,7 @@
       chosenEmojiDiv.textContent = '';
       raceArea.style.display = 'none';
       restartBtn.style.display = 'none';
-      selectionArea.style.display = 'flex';
+      selectionArea.style.display = 'block';
       instructionsBox.style.display = 'block';
       chooseText.style.display = 'block';
     });

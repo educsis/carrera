@@ -10,90 +10,64 @@
       text-align: center;
       padding: 20px;
     }
-
     .instrucciones {
-      background-color: #ffeb3b;
-      padding: 12px;
+      background-color: #fef08a;
+      padding: 15px;
+      border-radius: 10px;
       margin-bottom: 20px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      color: #333;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
     }
-
-    @media (max-width: 600px) {
-      .instrucciones {
-        font-size: 14px;
-      }
-    }
-
     .pista {
       position: relative;
       height: 60px;
       margin: 10px 0;
-      background: #f0f0f0;
+      background: #eee;
       border: 1px solid #ccc;
+      overflow: hidden;
     }
-
     .emoji {
       position: absolute;
       font-size: 40px;
+      left: 0;
       top: 10px;
-      left: 0px;
     }
-
     .controles {
       margin: 20px 0;
     }
-
     button {
       margin: 5px;
-      padding: 10px 15px;
+      padding: 10px 20px;
       font-size: 24px;
       cursor: pointer;
     }
-
     #resultado {
       font-size: 22px;
       font-weight: bold;
       margin-top: 20px;
     }
-
     #apuestaSeleccionada {
       font-size: 18px;
-      font-weight: normal;
       color: #555;
     }
-
-    #zonaCarrera {
-      display: none;
-    }
-
-    #reiniciarCarrera {
+    #zonaCarrera, #reiniciarCarrera {
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="instrucciones" id="instrucciones">
-    <p>🚨 <strong>Instrucciones del Juego:</strong> 🚨</p>
-    <p>1. Elige un emoji de la lista de abajo como tu apuesta. <br> 
-       2. Haz clic en "Iniciar Carrera" para que los emojis compitan. <br> 
-       3. ¡El primer emoji que cruce la meta gana! 🎉<br> 
-       4. El primero en enviar una captura de pantalla de su victoria recibirá un premio de <strong>Q200</strong>. 📸💰
-    </p>
+  <div id="instrucciones" class="instrucciones">
+    <strong>📣 Instrucciones:</strong><br>
+    1. Elige tu emoji favorito para apostar.<br>
+    2. Haz clic en “Iniciar Carrera” para comenzar.<br>
+    3. Si tu emoji gana, ¡felicidades! 🎉<br>
+    4. ¡Captura tu victoria para ganar un premio! 💰
   </div>
 
   <h1>🏁 La Super Carrera de Edwin</h1>
-  <p id="textoInicial">Elige un emoji para apostar y luego inicia la carrera.</p>
+  <p id="textoEleccion">Elige un emoji para apostar y luego inicia la carrera.</p>
 
   <div id="eleccion">
     <div class="controles">
-      <span>Tu apuesta:</span><br>
       <button data-emoji="🐢">🐢</button>
       <button data-emoji="🐇">🐇</button>
       <button data-emoji="🦄">🦄</button>
@@ -102,7 +76,6 @@
       <button data-emoji="🦁">🦁</button>
       <button data-emoji="🐵">🐵</button>
     </div>
-
     <div id="apuestaSeleccionada"></div>
     <button id="iniciarCarrera">Iniciar Carrera</button>
   </div>
@@ -118,132 +91,121 @@
   </div>
 
   <div id="resultado"></div>
-  <button id="reiniciarCarrera">Reiniciar Carrera</button>
+  <button id="reiniciarCarrera">Reiniciar</button>
+
+  <!-- 🎵 Sonidos -->
+  <audio id="sonidoGanar" src="win-sound.mp3"></audio>
+  <audio id="sonidoPerder" src="lose-sound.mp3"></audio>
+  <audio id="sonidoInicio" src="start.mp3"></audio>
+  <audio id="sonidoCarrera" src="race-sound.mp3" loop></audio>
 
   <script>
     const botones = document.querySelectorAll('[data-emoji]');
-    const botonInicio = document.getElementById('iniciarCarrera');
-    const botonReiniciar = document.getElementById('reiniciarCarrera');
-    const resultado = document.getElementById('resultado');
+    const iniciar = document.getElementById('iniciarCarrera');
+    const reiniciar = document.getElementById('reiniciarCarrera');
     const apuestaSeleccionada = document.getElementById('apuestaSeleccionada');
+    const resultado = document.getElementById('resultado');
     const emojis = document.querySelectorAll('.emoji');
     const zonaCarrera = document.getElementById('zonaCarrera');
     const eleccion = document.getElementById('eleccion');
     const instrucciones = document.getElementById('instrucciones');
-    const textoInicial = document.getElementById('textoInicial');
+    const textoEleccion = document.getElementById('textoEleccion');
+
+    const sonidoGanar = document.getElementById('sonidoGanar');
+    const sonidoPerder = document.getElementById('sonidoPerder');
+    const sonidoInicio = document.getElementById('sonidoInicio');
+    const sonidoCarrera = document.getElementById('sonidoCarrera');
 
     let apuesta = null;
-    let corriendo = false;
-    let finalizados = [];
 
     botones.forEach(btn => {
       btn.addEventListener('click', () => {
-        apuesta = btn.getAttribute('data-emoji');
+        apuesta = btn.dataset.emoji;
         apuestaSeleccionada.textContent = `Has apostado por: ${apuesta}`;
-        apuestaSeleccionada.style.color = 'black';
       });
     });
 
-    botonInicio.addEventListener('click', () => {
+    iniciar.addEventListener('click', () => {
       if (!apuesta) {
-        alert('¡Primero debes elegir un emoji!');
+        alert("¡Debes elegir un emoji primero!");
         return;
       }
 
-      corriendo = true;
-      finalizados = [];
-      resultado.textContent = '';
-      emojis.forEach(emoji => {
-        emoji.style.left = '0px';
-      });
-
-      instrucciones.style.display = 'none';
-      textoInicial.style.display = 'none';
       eleccion.style.display = 'none';
+      instrucciones.style.display = 'none';
+      textoEleccion.style.display = 'none';
       zonaCarrera.style.display = 'block';
-      resultado.style.display = 'none';
 
-      botones.forEach(btn => {
-        btn.disabled = true;
-      });
+      emojis.forEach(e => e.style.left = '0px');
 
-      iniciarCarrera();
+      sonidoInicio.play();
+      setTimeout(() => {
+        sonidoCarrera.play();
+        correrCarrera();
+      }, 800); // espera que termine el sonido de inicio
     });
 
-    botonReiniciar.addEventListener('click', () => {
-      corriendo = false;
-      finalizados = [];
-      resultado.textContent = '';
+    reiniciar.addEventListener('click', () => {
       apuesta = null;
       apuestaSeleccionada.textContent = '';
-
-      instrucciones.style.display = 'block';
-      textoInicial.style.display = 'block';
-      eleccion.style.display = 'block';
+      resultado.textContent = '';
       zonaCarrera.style.display = 'none';
-
-      botones.forEach(btn => {
-        btn.disabled = false;
-      });
-
-      botonReiniciar.style.display = 'none';
-      botonInicio.style.display = 'inline-block';
+      eleccion.style.display = 'block';
+      instrucciones.style.display = 'block';
+      textoEleccion.style.display = 'block';
+      reiniciar.style.display = 'none';
     });
 
-    function iniciarCarrera() {
-      const anchoPista = document.querySelector('.pista').clientWidth;
-      const meta = anchoPista - 50;
-
+    function correrCarrera() {
+      const meta = document.querySelector('.pista').offsetWidth - 50;
       const posiciones = {};
-      emojis.forEach(emoji => {
-        posiciones[emoji.dataset.emoji] = 0;
-      });
+      emojis.forEach(e => posiciones[e.dataset.emoji] = 0);
 
-      function paso() {
-        if (!corriendo) return;
+      function mover() {
+        let hayGanador = false;
 
-        emojis.forEach(emoji => {
-          const id = emoji.dataset.emoji;
-          if (finalizados.includes(id)) return;
+        emojis.forEach(e => {
+          const id = e.dataset.emoji;
+          const avance = Math.random() * 5 + 1;
+          posiciones[id] += avance;
+          e.style.left = posiciones[id] + 'px';
 
-          const velocidad = Math.random() * 4 + 1;
-          posiciones[id] += velocidad;
-          emoji.style.left = posiciones[id] + 'px';
+          if (posiciones[id] >= meta && !hayGanador) {
+            hayGanador = true;
+            sonidoCarrera.pause();
+            sonidoCarrera.currentTime = 0;
 
-          if (posiciones[id] >= meta) {
-            finalizados.push(id);
-            if (finalizados.length === 1) {
-              corriendo = false;
-              mostrarGanador(id);
+            let ganador = id;
+
+            // 30% chance de forzar victoria del usuario
+            if (apuesta && Math.random() < 0.3) {
+              ganador = apuesta;
             }
+
+            const gano = ganador === apuesta;
+            const mensaje = gano
+              ? `🎉 ¡Ganaste! El emoji ${ganador} fue el ganador.`
+              : `😢 Perdiste. El emoji ${ganador} ganó la carrera.`;
+
+            resultado.textContent = mensaje;
+            <!-- alert(mensaje); -->
+
+            if (gano) {
+              sonidoGanar.play();
+            } else {
+              sonidoPerder.play();
+            }
+
+            reiniciar.style.display = 'inline-block';
           }
         });
 
-        if (corriendo) {
-          requestAnimationFrame(paso);
+        if (!hayGanador) {
+          requestAnimationFrame(mover);
         }
       }
 
-      requestAnimationFrame(paso);
-    }
-
-    function mostrarGanador(ganador) {
-      if (ganador === apuesta) {
-        resultado.textContent = `🎉 ¡Ganaste! ${ganador} fue el primero en llegar.`;
-        resultado.style.color = 'green';
-        alert(`¡Ganaste! ${ganador} fue el primero en llegar.`);
-      } else {
-        resultado.textContent = `😢 Perdiste. ${ganador} ganó la carrera.`;
-        resultado.style.color = 'red';
-        alert(`Perdiste. ${ganador} ganó la carrera.`);
-      }
-
-      botonReiniciar.style.display = 'inline-block';
-      botonInicio.style.display = 'none';
-
-      botones.forEach(btn => {
-        btn.disabled = true;
-      });
+      mover();
     }
   </script>
 </body>
